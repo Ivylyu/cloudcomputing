@@ -1,0 +1,264 @@
+<!DOCTYPE >
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Weather in China</title>
+
+    <style type="text/css">
+      body {
+        background-color: rgb(54, 110, 162);
+        padding: 20px;
+        margin: 0;
+        font-size: 16px;
+      }
+
+      h1,
+      h2,
+      p,
+      ul,
+      li {
+        font-family: Helvetica, Arial, sans-serif;
+      }
+
+      ul.header {
+        background-color: #111;
+        padding: 0;
+      }
+
+      ul.header li {
+        display: inline;
+        list-style-type: none;
+        margin: 0;
+      }
+
+      ul.header li a {
+        color: rgb(211, 211, 211);
+        font-weight: bold;
+        text-decoration: none;
+        padding: 20px;
+        display: inline-block;
+      }
+
+      ul.header li a:hover {
+        background-color: rgb(2, 114, 241);
+      }
+
+      .active {
+        background-color: rgb(2, 114, 241);
+        padding: 20px 0;
+      }
+
+      #map-container {
+        padding: 6px;
+        border-width: 1px;
+        border-style: solid;
+        border-color: #ccc #ccc #999 #ccc;
+        -webkit-box-shadow: rgba(64, 64, 64, 0.5) 0 2px 5px;
+        -moz-box-shadow: rgba(64, 64, 64, 0.5) 0 2px 5px;
+        box-shadow: rgba(64, 64, 64, 0.1) 0 2px 5px;
+      }
+
+      #map {
+        width: 100%;
+        height: 100%;
+      }
+
+      .contentLayout {
+        display: grid;
+        height:1000px;
+        grid-template-columns: 80% 20%;
+        grid-template-rows: 60px auto;
+      }
+   
+      .mapStyle {
+        font-weight: bold;
+      }
+
+      .mapLocation {
+        grid-column-start: 1;
+        grid-column-end: 2;
+        height:100%
+      }
+
+      .imgStyle {
+        grid-column-start: 2;
+        grid-column-end: 3;
+        width:250px;
+        height:250px;
+      }
+    </style>
+
+    <script
+      type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?sensor=false"
+    ></script>
+    <script type="text/javascript" src="../src/markerclusterer.js"></script>
+    <script type="text/javascript">
+      function initialize() {
+        var center = new google.maps.LatLng(39.91, 116.36);
+        function getDay(num, str) {
+          var today = new Date();
+          var nowTime = today.getTime();
+          var ms = 24 * 3600 * 1000 * num;
+          today.setTime(parseInt(nowTime + ms));
+          var oYear = today.getFullYear();
+          var oMoth = (today.getMonth() + 1).toString();
+          if (oMoth.length <= 1) oMoth = "0" + oMoth;
+          var oDay = today.getDate().toString();
+          if (oDay.length <= 1) oDay = "0" + oDay;
+          return oYear + str + oMoth + str + oDay;
+        }
+        var map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 6,
+          center: center,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+
+        var crr = getDay(0, "-");
+        var yes = getDay(-1, "-");
+        var markers = [];
+        fetch(
+          "https://api.openaq.org/v1/latest?country=CN&&parameter=pm25&&limit=1500&&order_by[]=city"
+        )
+          .then(function(response) {
+            return response.json();
+          })
+          .then(function(data) {
+            var a = -1;
+            for (var i = 1; i < data.results.length; i++) {
+              var realData = data.results[i].coordinates;
+              var date = data.results[i].measurements[0].lastUpdated;
+              if (
+                (date.search(crr) != -1 || date.search(yes) != -1) &&
+                data.results[i].coordinates !== undefined &&
+                data.results[i].city !== data.results[i - 1].city
+              ) {
+                var latLng = new google.maps.LatLng(
+                  realData.latitude,
+                  realData.longitude
+                );
+                var test = data.results[i].measurements[0].value;
+                var city = data.results[i].city;
+                var location = data.results[i].location;
+
+                if (test >= 0 && test < 12) {
+                  var marker = new google.maps.Marker({
+                    map: map,
+                    position: latLng,
+                    label: String(test),
+                    cities: city,
+                    locations: location,
+                    icon:
+                      "https://s3.amazonaws.com/s3642928-rmit-storage/html/icons/green.png"
+                  });
+                }
+                if (test >= 12 && test < 35) {
+                  var marker = new google.maps.Marker({
+                    map: map,
+                    position: latLng,
+                    label: String(test),
+                    cities: city,
+                    locations: location,
+                    icon:
+                      "https://s3.amazonaws.com/s3642928-rmit-storage/html/icons/orange.png"
+                  });
+                }
+                if (test >= 35 && test < 55) {
+                  var marker = new google.maps.Marker({
+                    map: map,
+                    position: latLng,
+                    label: String(test),
+                    cities: city,
+                    locations: location,
+                    icon:
+                      "https://s3.amazonaws.com/s3642928-rmit-storage/html/icons/yellow.png"
+                  });
+                }
+                if (test >= 55 && test < 150) {
+                  var marker = new google.maps.Marker({
+                    map: map,
+                    position: latLng,
+                    label: String(test),
+                    cities: city,
+                    locations: location,
+                    icon:
+                      "https://s3.amazonaws.com/s3642928-rmit-storage/html/icons/red.png"
+                  });
+                }
+                if (test >= 150 && test < 250) {
+                  var marker = new google.maps.Marker({
+                    map: map,
+                    position: latLng,
+                    label: String(test),
+                    cities: city,
+                    locations: location,
+                    icon:
+                      "https://s3.amazonaws.com/s3642928-rmit-storage/html/icons/purple.png"
+                  });
+                }
+                if (test >= 250 && test < 500) {
+                  var marker = new google.maps.Marker({
+                    map: map,
+                    position: latLng,
+                    label: String(test),
+                    cities: city,
+                    locations: location,
+                    icon:
+                      "https://s3.amazonaws.com/s3642928-rmit-storage/html/icons/deepPurple.png"
+                  });
+                }
+                var infowindow = new google.maps.InfoWindow({ content: "" });
+
+                google.maps.event.addListener(marker, "click", function() {
+                  infowindow.open(map, this);
+                  infowindow.setContent(
+                    '<div id="content">' +
+                      "<div>" +
+                      "</div>" +
+                      "<h1>City: " +
+                      this.cities +
+                      "</h1>" +
+                      '<div id="bodyContent">' +
+                      '<p class = "mapStyle">PM2.5: ' +
+                      this.label +
+                      "</p >" +
+                      '<p class = "mapStyle">Location: ' +
+                      this.locations +
+                      "</p >" +
+                      " View 7-day detail: " +
+                      '<a id="alink" href= ' +
+                      "charts_yiweng.html?" +
+                      `${this.locations}` +
+                      ">" +
+                      "DETAILS" +
+                      "</ a>" +
+                      "</div>" +
+                      "</div>"
+                  );
+                });
+
+                markers.push(marker);
+              }
+            }
+          });
+      }
+      google.maps.event.addDomListener(window, "load", initialize);
+    </script>
+  </head>
+  <body>
+    <h1>Weather in China</h1>
+    <ul class="header">
+      <li><a href="https://s3.amazonaws.com/s3642928-rmit-storage/html/HomeContent.html">Home</a></li>
+      <li class="active"><a href="https://s3.amazonaws.com/s3642928-rmit-storage/html/Maps.html">Maps</a></li>
+    </ul>
+    <div class="contentLayout">
+      <h3>China National Air Quality (PM 2.5) -- You can click each location to see 7 days statistics:)</h3>
+      <div class="mapLocation" id="map-container"><div id="map"></div></div>
+      <img
+        class="imgStyle"
+        src="https://s3.amazonaws.com/s3642928-rmit-storage/html/icons/index.png"
+        alt="the index cannot correctly open"
+      />
+    </div>
+  </body>
+</html>

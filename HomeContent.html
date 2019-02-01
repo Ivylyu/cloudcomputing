@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Weather in China</title>
+    <style>
+      body {
+        background-color: rgb(54, 110, 162);
+        padding: 20px;
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      p,
+      ul,
+      li {
+        font-family: Helvetica, Arial, sans-serif;
+      }
+
+      ul.header {
+        background-color: #111;
+        padding: 0;
+      }
+
+      ul.header li {
+        display: inline;
+        list-style-type: none;
+        margin: 0;
+      }
+
+      ul.header li a {
+        color: rgb(211, 211, 211);
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-block;
+        padding: 20px;
+      }
+
+      ul.header li a:hover {
+        background-color: rgb(2, 114, 241);
+      }
+
+      .active {
+        background-color: rgb(2, 114, 241);
+        padding: 20px;
+      }
+      .content {
+          display: grid;
+          align-content: center;
+          justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Weather in China</h1>
+    <ul class="header">
+      <li>
+        <a class="active"
+          href="https://s3.amazonaws.com/s3642928-rmit-storage/html/HomeContent.html"
+          >Home</a
+        >
+      </li>
+      <li>
+        <a
+          href="https://s3.amazonaws.com/s3642928-rmit-storage/html/Maps.html"
+          >Maps</a
+        >
+      </li>
+    </ul>
+    <div class="content">
+        <h2>Welcome to Weather in China !!!</h2>
+        <p>student ID: s3642928 Yi Weng, s3710646 XinHong Chen, s3710372 Ye Lyu</p>
+        <p>You can click MAPS to see the PM2.5 index in China and choose a specific location to see details on google Chart </p>
+        <p>You can also click Charts to see the past seven days' PM2.5 statistics</p>
+    </div>
+  </body>
+</html>
