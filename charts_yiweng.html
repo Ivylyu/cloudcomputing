@@ -1,0 +1,190 @@
+<html>
+
+<head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {
+            'packages': ['corechart']
+        });
+        google.charts.setOnLoadCallback(drawVisualization);
+        function parseQueryString(str){
+            var pairs = str.replace(/^.*\?/, '').split('&'),
+            res = {};
+            console.log('pairs', pairs);
+
+            for (var i = pairs.length - 1; i > 0; i -= 1) {
+            var p = pairs[i].split('=');
+            res[p[0]] = p[1];
+            }
+            return res;
+        }
+		function getDay(num, str) {
+    var today = new Date();
+    var nowTime = today.getTime();
+    var ms = 24*3600*1000*num;
+    today.setTime(parseInt(nowTime + ms));
+    var oYear = today.getFullYear();
+    var oMoth = (today.getMonth() + 1).toString();
+    if (oMoth.length <= 1) oMoth = '0' + oMoth;
+    var oDay = today.getDate().toString();
+    if (oDay.length <= 1) oDay = '0' + oDay;
+    return oDay + str + oMoth + str + oYear;
+}
+        function drawVisualization() {
+            // Some raw data (not necessarily accurate)
+
+
+            var cityx = 'Anqing An Qing Da Xue';
+
+            // Promise.all(urls)
+//            var obj = parseQueryString(
+//                "https://api.openaq.org/v1/latest?country=CN&&parameter=pm25&&limit=1500&&order_by[]=city");
+
+//            var myHeaders = new Headers();
+//            var myInit = { method: 'GET',
+//            headers: myHeaders,
+//            mode: 'cors',
+//            cache: 'default' };
+
+			var urlB = 'https://api.openaq.org/v1/latest?country=CN&&parameter=pm25&&limit=1500&&order_by[]=city&&city='+cityx;
+
+//            var requestA = new Request(urlA, myInit);
+
+       //     fetch(requestA).then(function(response) {
+       //             return response.json();
+       //     }).then(function(data) {
+      //          console.log(data);
+      //          console.log('meta', data.meta);
+     //           console.log('result', data.results);
+
+
+     //       });
+(async () => {
+			var _day6 = "https://s3.amazonaws.com/s3642928-rmit-storage/html/COUNT_PM2.5_"+getDay(-1, '')+".json";
+			var _day5 = "https://s3.amazonaws.com/s3642928-rmit-storage/html/COUNT_PM2.5_"+getDay(-2, '')+".json";
+			var _day4 = "https://s3.amazonaws.com/s3642928-rmit-storage/html/COUNT_PM2.5_"+getDay(-3, '')+".json";
+			var _day3 = "https://s3.amazonaws.com/s3642928-rmit-storage/html/COUNT_PM2.5_"+getDay(-4, '')+".json";
+			var _day2 = "https://s3.amazonaws.com/s3642928-rmit-storage/html/COUNT_PM2.5_"+getDay(-5, '')+".json";
+			var _day1 = "https://s3.amazonaws.com/s3642928-rmit-storage/html/COUNT_PM2.5_"+getDay(-6, '')+".json";
+
+			var day1;
+            var day2 ;
+            var day3 ;
+            var day4 ;
+            var day5 ;
+            var day6 ;
+            var day7 ;
+			
+			var responseA = await fetch(_day1)
+			var dataA = await responseA.json()
+			for (var i = 1; i < dataA.length; i++) {
+			
+				console.log(typeof(dataA[1].location));
+
+              if (dataA[i].loaction === 'Huainan Yi Yi Ru Ye Gong Ye Yuan') {
+			  console.log(dataA.length);
+			  day1=dataA[i].value;
+			  console.log(day1);
+			  break;
+				}
+			}
+
+			var responseA = await fetch(_day2)
+			var dataA = await responseA.json()
+			for (var i = 1; i < dataA.length; i++) {
+
+              if (dataA[i].loaction == cityx) {
+			  day2=dataA[i].value;
+			  break;
+				}
+			}
+			 responseA = await fetch(_day3)
+			 dataA = await responseA.json()
+			for (var i = 1; i < dataA.length; i++) {
+
+              if (dataA[i].loaction == cityx) {
+			  day3=dataA[i].value;
+			  break;
+				}
+			}
+			 responseA = await fetch(_day4)
+			 dataA = await responseA.json()
+			for (var i = 1; i < dataA.length; i++) {
+
+              if (dataA[i].loaction == cityx) {
+			  day4=dataA[i].value;
+			  break;
+				}
+			}
+			 responseA = await fetch(_day5)
+			 dataA = await responseA.json()
+			for (var i = 1; i < dataA.length; i++) {
+
+              if (dataA[i].loaction == cityx) {
+			  day5=dataA[i].value;
+			  break;
+				}
+			}
+			 responseA = await fetch(_day6)
+			 dataA = await responseA.json()
+			for (var i = 1; i < dataA.length; i++) {
+
+              if (dataA[i].loaction == cityx) {
+			  day6=dataA[i].value;
+			  break;
+				}
+			}
+
+			var dateObj=new Date(); 			
+		
+			
+			
+			const responseB = await fetch(urlB)
+			const dataB = await responseB.json()
+			for (var i = 1; i < dataB.results.length; i++) {
+
+              if (dataB.results[i].city == cityx) {
+			day7=dataB.results[i].measurements[0].value;
+			break;}}
+
+            var data1 = google.visualization.arrayToDataTable([
+                ['Date', 'PM2.5', 'Average'],
+                ['day1', day1, 10],
+                ['day2', day2, 20],
+                ['day3', day3, 22],
+                ['day4', day4, 24.4],
+                ['day5', day5, 25],
+                ['day6', day6, 21],
+                [dateObj.toLocaleDateString()+' (today)', day7, 23]
+            ]);
+
+
+            var options = {
+                title: 'Monthly Coffee Production by Country',
+                vAxis: {
+                    title: 'PM2.5'
+                },
+                hAxis: {
+                    title: 'Day'
+                },
+                seriesType: 'bars',
+                series: {
+                    1: {
+                        type: 'line'
+                    }
+                }
+            };
+
+            var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
+            chart.draw(data1, options);
+
+			})()
+        }
+    </script>
+</head>
+
+<body>
+    <div id="chart_div" style="width: 900px; height: 500px;"></div>
+</body>
+
+</html>
